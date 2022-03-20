@@ -1,0 +1,862 @@
+﻿//This function hold tool to Wait till the sync object is enabled Or for 100 seconds 
+function syncTime(syncObj) 
+{
+        
+//       i=0;
+//      
+//        do
+//          {
+//        
+//            aqUtils["Delay"](500,"Waiting for Object to be accessible");
+//    
+//            i= i+1;
+//
+//            if((syncObj["Enabled"])||(i>99))
+//
+//            break;
+//      
+//          }
+//      
+//        while(1)
+          
+}
+
+// This function check for state of Application and terminate from task manager, if exists
+function appProcessCheck(appName)
+{
+      
+  if (WMI["ProcessExists"](appName))
+  {
+  
+  app["Terminate"]();
+            
+  Log["Event"] ("Application is hung so closed")
+  } 
+      
+  else
+  {
+    Log["Message"] ("Application is closed");
+  }
+
+}
+
+//Launch app based on URL
+function LaunchApp(inputPath)
+{
+  
+  var appType = "Web";
+  
+  if(Sys.WaitBrowser().Exists)
+  {
+    Sys["Browser"]()["Close"]()
+  }
+          
+  if(appType = "Web")
+  {
+            
+    Browsers["Item"](btChrome)["Run"](inputPath); // fromat should be "https://URL/"
+            
+  } else if (appType = "Windows") 
+  {
+      
+    WshShell["Run"](inputPath);
+          
+  } 
+  else 
+  {
+          
+    Log["Error"]("Applicationn Path in Configuration is Incorrect");  
+          
+  }
+
+}
+
+function LaunchRTA(input) 
+{
+  
+   var objShell = new ActiveXObject("shell.application");
+        
+   objShell.ShellExecute(input, "", "", "runas", 1);
+
+  }
+
+
+      
+// perform click operation in the application
+function click(clickPath, objectName) 
+{    
+    
+  clickObj = eval(clickPath);
+  if(clickObj["Enabled"])
+  {
+   clickObj["Click"]();
+      
+  Log["Message"]("Successfully clicked on Object: " + objectName);  
+  }
+  else
+  {
+     Log["Message"]("Object Disable: " + objectName);
+  }
+
+  
+      
+  //      syncTime(clickObj);
+      
+   
+
+}
+
+function Dropdown(clickPath, objectName)
+{
+   clickObj = eval(clickPath);
+    clickObj["Click"]();
+  
+}
+
+// perform keyboard simulation in the application
+function press(inputKey) 
+{    
+      
+  var keyboardAction = "[" + inputKey + "]";
+      
+  Sys["Desktop"]["Keys"](keyboardAction);
+      
+  Log["Message"]("Successfully simualted keyboard " + inputKey + " action.");
+                      
+}
+
+// perform select operation in the application
+function select(clickPath,value) 
+{    
+   clickObj = eval(clickPath);
+    
+    syncTime(clickObj);
+
+//    condition to check if the object["ClrClassName"] is not a type of list, this operation is mainly used to
+//    perform	click operation on Radio button/Check box
+      
+    if(aqString["Find"](clickObj["ClrClassName"],"List") < 0
+        && aqString["Find"](clickObj["ClrClassName"],"TreeView") < 0)
+        {
+           clickObj["Click"]();
+        }
+		
+//   condition to check if the object["ClrClassName"] is a type of ComboBox
+         else if(aqString["Find"](clickObj["ClrClassName"],"ComboBox")  > -1)
+          {
+          
+            selectComboBox(clickPath,value);
+          
+            }
+            
+    
+    else if (clickObj["ClrClassName"] == "SortableListView")
+    {
+    
+            selectSortList(clickPath,value);      
+      
+    } 
+    else if (clickObj["DataContext"]["ClrClassName"] == "FileOpenControl" || 
+    
+                clickObj["DataContext"]["ClrClassName"] == "NetworkDriveSettingsViewModel")
+                {
+    
+            selectFolderList(clickPath,value);
+            
+            return;      
+        
+        } 
+        else 
+        {
+                
+            Log["Error"]("No results in the list");
+                    
+            throw "TestCase Verification Failed"; 
+            
+        }
+         
+}             
+
+  
+// perform selection from combo box selction with input value in the application
+  function selectComboBox(clickPath,Name) 
+  {
+                       
+
+  }
+
+//perform setting combobox selection in the application
+
+  function  selectSettingsCombobox(clickPath,format) 
+  {
+    
+      clickPath["ClickItem"](format);      
+
+  }
+
+//perform select operation based on index in the application
+  function set(objectName,indexPath, inputValue) 
+  {
+  
+      indexObj= eval(indexPath);   
+      
+      syncTime(indexObj);
+      
+      indexObj["SelectItemWithValue"](inputValue); 
+        
+}
+
+// enter values in fields in the application
+  function enter(keyPath,valueSet) 
+  {
+  
+//      if(valueSet == "First day of Previous Month" || valueSet == "Last day of Previous Month" ){
+//      
+//        valueSet = getPreviousDate(valueSet);
+//      
+//      } else if(valueSet == "Today's Date"){
+//      
+//        valueSet = getCurrentDate();
+//      
+//      }
+
+      keyobj=eval(keyPath);
+     
+//      syncTime(keyobj);
+     
+//      keyobj["Click"]();
+          
+//      keyobj ["Keys"]("[Hold]^a");//Does the operation of Ctrl+A+Del
+//       
+      keyobj ["Keys"]("[Del]");
+
+      
+      keyobj["Click"]();
+     
+      keyobj ["SetText"]("");
+      
+      keyobj ["Keys"](valueSet);
+      
+     
+      Sys["Desktop"]["Keys"]("[Tab]");
+     
+  }
+
+// drag to specified co-ordinates in the application
+  function drag(objectName,dragitemObj,verificationValue) 
+  {
+
+      dragitemObj = eval(dragitemObj);
+
+      dragitemObj["Drag"](92,73,25,-19);
+                
+  }
+
+// perform double click operation in the application
+  function doubleClick(dClick) 
+  {
+      
+      dClickObj = eval(dClick);
+      
+      syncTime(dClickObj)
+      
+      dClickObj["DblClick"]();
+      
+  }
+
+// to right click on patient in search results
+  function rightClick(clickPath,value) 
+  {
+
+      clickObj = eval(clickPath)
+      
+      clickObj["Click"]();
+      
+      clickObj["ClickR"](); 
+         
+      syncTime(clickObj)  
+  
+  }
+  
+  function setData()
+  {
+   SetSystemTime();
+   SetCurrentDate();
+  }
+  function SetSystemTime()
+  {
+//  var dt1 = aqDateTime["Now"]();
+//  dt2 = aqDateTime.AddDays(dt1, -7);
+//  dt3 = aqDateTime.AddHours(dt2, -7); 
+  var dt1 = aqDateTime.SetDateTimeElements(2017, 1, 1, 10, 15, 10);
+  aqDateTime.SetSystemDateTime(dt1);
+  
+  }
+  
+  var GTime = aqDateTime["Now"]();
+  function SetCurrentDate()
+  {
+   aqDateTime.SetSystemDateTime(GTime);
+  }
+  function ASetSystemTime(TimeVal)
+  {
+  // var TimeVal1 = aqConvert["StrToInt"](TimeVal);
+   //var dt1 = aqDateTime["Now"]();
+   //aqDateTime.SetTimeElements(10, 15, 12);
+   var dt1 =  aqDateTime.SetTimeElements(TimeVal);
+   aqDateTime.SetSystemDateTime(dt1);
+  }
+  
+// hard wait till the sync time in seconds elapse
+  function waitForScreen(inputValue) 
+  {
+
+      waitTimeValue = inputValue * 1000;
+   
+      aqUtils["Delay"](waitTimeValue,"Wait For Object");
+   
+      Sys["Desktop"]["Keys"]("[Enter]");
+  
+  }
+  
+// to select item in sort list table or gird
+  function selectSortList(clickPath,value) 
+  {
+   
+      clickObj = eval(clickPath);
+    
+      syncTime(clickObj);
+      
+      i=0;
+      
+      nameListCount =  clickObj["Items"]["Count"]; 
+        
+      do 
+          
+      {    
+            
+        if((nameIntheList === value) || (i>=nameListCount)) {
+             
+          if(nameIntheList === value) {
+                
+            i= i+1;
+                      
+            clickObj["WPFObject"]("ListViewItem", "", i)["Click"]();
+                
+            Log["Event"](value + " selected in list");
+                
+            break; 
+                             
+          } else 
+          {
+                
+            Log["Message"](value + " doesnt exists in list");
+                
+            break;
+            
+          }
+            
+        }
+               
+        i= i+1;
+          
+      }
+        
+      while(1) 
+  
+  }
+
+// to expand button in UI
+  function expand(expandObject)
+  {
+  
+    expandObject = eval(expandObject);
+        
+    syncTime(expandObject);
+  
+//    expandObject["SetFocus"]();
+  
+    expandObject["Keys"]("[Tab]");
+
+    expandObject["Keys"]("[Enter]");
+  
+  }
+  
+//Terminates a given process where input is the name of the process.
+  function terminateProcess(input)
+  {
+
+    if(!WMI["ProcessExists"](input)){
+      
+      Log["Error"]("The Process : " + input + " does not exist");
+    
+    } 
+    else 
+    {
+    
+      Sys["Process"](aqString["Replace"](input,".exe",""))["Terminate"]();
+      
+      WMI["WaitForProcessExit"](input, 150000);
+
+    }
+  
+  }
+  
+  function scroll(objectName,verifyObj,verificationValue)
+  {
+  
+      verifyObj = eval(verifyObj);
+      verifyObj["set_Focusable"](true);
+      
+      
+      //verifyObj["wRowCount"]();  
+
+      count = 1;
+      
+      while(Position != verificationValue && count!=50)
+      {
+      
+        if(Position < verificationValue){
+      
+          verifyObj["MouseWheel"](-1);
+          
+          scanPosition++;
+      
+        }
+        else 
+        {
+      
+          verifyObj["MouseWheel"](1);
+          
+          scanPosition--;
+      
+        }
+      count++;
+      }
+  
+  }
+  
+  //Retrieves the Previous month's date based on the valueSet given
+  function getPreviousDate(valueSet){
+  
+    var todayDate = Project["Variables"]["noteValue"];
+    
+    var splitDate = todayDate["split"]("/");
+    
+    var day = splitDate[1];
+
+    var month = splitDate[0];
+
+    var year = splitDate[2];
+    
+    //Setting the Month
+    
+    if(month == 1){
+      
+      month = "12";
+      
+      year = year - 1;
+      
+    } else {
+    
+      month = month - 1;
+    
+    }
+    
+    //Setting the day based on the valueSet passed.
+    //If valueset = First day of the Month then the day is set to 1
+    //Else it is set to 29, 30 or 31 based on the month.
+    
+    if(aqString["Find"](valueSet,"First") > -1){
+    
+      day = 1;
+    
+    }  else if(aqString["Find"](valueSet,"Last") > -1) {
+    
+    //Below logic is to set the last day of the month based on leap year, odd month or even month etc
+    
+      if(month == 2){
+      
+        day = 28;
+      
+        if(aqDateTime["IsLeapYear"](year)) day = 29;
+      
+      
+      } else if(month%2 == 0 && month != 7){
+      
+        day = 30
+      
+      } else {
+      
+        day = 31;
+      
+      }
+    
+    }
+    
+    //The below logic has been applied since the Date format is MM/dd/yyyy
+    //and in the system it is default set to M/d/yyyy
+    
+    month = aqConvert["VarToStr"](month);
+    
+    day = aqConvert["VarToStr"](day);
+    
+    if(month["length"] < 2){
+      
+      month = "0" + month;
+    
+    }
+    
+    if(day["length"] < 2){
+      
+      day = "0" + day;
+    
+    } 
+    
+    //Constructing the Date string
+    
+    var previousDate = month + "/" + day + "/" + year;
+    
+    return previousDate;
+    
+
+  }
+  
+  //Rertives today's Date
+  function getCurrentDate(){
+  
+    //Retrieving the stored date
+  
+    var todayDate = Project["Variables"]["noteValue"];
+    
+    var splitDate = todayDate["split"]("/");
+    
+    var day = splitDate[1];
+
+    var month = splitDate[0];
+    
+    //The below logic has been applied since the Date format is MM/dd/yyyy
+    //and in the system it is default set to M/d/yyyy
+    
+    if(month["length"] < 2){
+      
+      month = "0" + month;
+    
+    }
+    
+    if(day["length"] < 2){
+      
+      day = "0" + day;
+    
+    } 
+    
+    //Constructing the Date string
+    
+    var currentDate = month + "/" + day + "/" + splitDate[2];
+    
+    return currentDate;
+  
+  }
+  
+  function replaceConfigSettingsXML(appPath)
+  { 
+      try
+      {
+         
+           if (aqFileSystem["Exists"](appPath))
+           {
+                aqFileSystem["CopyFile"]("D:\\config.xml","C:\\Config_file",true);
+                Log["Message"]("Dupliacated Existing Default config File");
+                return;
+           }
+       }
+      catch(ex)
+      {
+         Log["Message"]("Failed to Copy Application Settings File due to :- " + ex);
+      }
+  }
+        
+
+  function switchState(clickPath, value) 
+  {   
+    clickObj = eval(clickPath);
+  if((clickObj["SwitchState"]["OleValue"]) != value)
+    clickObj["Click"]();
+ 
+  }
+  
+  //Author:Sushant
+  function Close(clickPath, objectName)
+  {
+    clickObj = eval(clickPath);
+      
+  //      syncTime(clickObj);
+  
+   
+  clickObj["Close"]();
+      
+  Log["Message"]("Successfully clicked on Object: " + objectName); 
+  }
+  
+  //Author:Sushant
+  function CheckBox(clickPath, objectName)
+  {
+    clickObj = eval(clickPath);
+      
+   if(clickObj["Content"]["IsSelected"]==false)
+   
+   {
+     ImageRepository["CheckBox"]["ValidationChkBox"]["Click"]()
+      
+   }
+    else if(clickObj["Content"]["IsSelected"]==true)
+   {
+     ImageRepository["CheckBox"]["ValidationChkBox"]["Click"]()
+   }
+ 
+  
+  }
+  //Author:Sushant
+  
+//function Repeat(Repeatcount,action)
+//{
+//    Repeatcount = eval(Repeatcount);
+//        
+//    waitForScreen(Repeatcount)
+//      
+//    for(i=0;i<Repeatcount;i++)
+//    {
+//      action(action);
+//    }
+//}
+//
+//function AttachDocument(objdoc,attach,input)
+//{
+//  
+//  
+//  
+//}
+//function Enable(wait,refresh)
+////{
+////  //Wait for Enabled
+////  Var numberofseconds = 60*5 //5 minutes
+////  for(i=0;i<numberofseconds;i++)
+////  {
+////    if(wait.Enabled)
+////    {
+////      Log["Message"]("Enabled");
+////      return;
+////    }
+////    else
+////    {
+////      Log["Error"]("Error in general Enableor not Enabled")
+////      
+////    }
+////  }
+////}
+//
+//function Disable(obj)
+//{
+//  if(obj == "Exists" || obj  == "Disabled" ) 
+//  { 
+//    Log["Message"]("Disabled");
+//    return;
+//  }
+//  
+//}
+//function Submit(obj,Action)
+//{
+//  if(obj == "Exists" || obj  == "Enabled" ) 
+//  { 
+//    obj(Action)
+//    return true
+//  }
+//  else
+//  {
+//    return false
+//  }
+//  
+//
+//}
+//function hover(obj,action)
+//{
+//  obj.HoverMouse(action)
+//      
+//}
+//
+//function copy(outputfile,folder)
+//{
+// var c = new ActiveXObject("scripting.FileSystemObject")
+// if(c.FileExistes(outputfile))
+//    c.CopyFiles(folder,outputfile,true)
+//    
+//}
+//function sort(Ascending,obj)
+//{
+//  for (var i = 0; i < obj.length; i++) 
+//            {
+//            var temp = i;
+//            if(Ascending)
+//                {
+//                for (var j = i+1; j < obj.length; j++) 
+//                    if (obj[j][1] < obj[temp][1]) 
+//                        temp = j;
+//                }
+//            else
+//                {
+//                for (var j = i+1; j < obj.length; j++) 
+//                    if (obj[j][1] > obj[temp][1]) 
+//                        temp = j;
+//                }
+//                  return obj;
+//            
+//            }
+//        
+//}
+//
+//function run(obj,App)
+//{
+//  if(obj.Exists)
+//  {
+//    App.run(obj);
+//    
+//  }
+//  
+//}
+//
+//function open(filename)
+//{
+//  
+//  // open each file
+//  var file1Obj = aqFile.OpenTextFile(filename, aqFile.faRead, aqFile.ctANSI, false); 
+//   if (file1Obj == null)
+//    throw new Error("filename object not valid");
+//    return false;
+//    
+//}
+//
+//function Navigate(url)
+//{
+//  if(url ==null || !url.Exists)
+//  {
+//    throw new Error("filename object not valid");
+//    url.click();
+//  }
+//}
+//
+//function Apply(obj)
+//{
+//  if(obj.Exists) 
+//  {
+//    obj.Click();
+//    
+//  }
+//}
+//
+//function Delete(obj,btn,confirm)
+//{
+//  if(obj==null||!obj.Exists)
+//  {
+//    throw new Error("obj not valid");
+//    
+//  }
+//  
+//  if(confirm != null && confirm.Exists)
+//  {
+//    if( btn ==null||!btn.Exists)
+//  
+//    throw new Error("btn not valid");
+//    btn.click();
+//  }
+//}
+//
+//function rename(newname,item)
+//{
+//  if(item ==null || !item.Exists)
+//  {
+//     throw new Error("item is null");
+//    if(newname == null || newname.length<1)
+//     throw new Error("newName is not valid");
+//     item.DataContext.set_Label(newname)
+//  }
+//}
+//
+//function create(name,folder)
+//{
+//  //check if file already exists
+//  if(folder.Exists(name))
+//  {
+//    folder.Delete(name)
+//  }
+//  //Create new file
+//  aqFile["Create"](name)
+//  
+//}
+//function Edit(newvalue,editobj)
+//{
+//  editobj = eval(editobj);
+//  aqUtils["Delay"](100)
+//  editobj.SetText(newvalue)
+//  SetPropertyValue(newvalue);
+//  Edit(newvalue,editobj)
+//  
+//}
+//
+//function Execute(obj)
+//{
+//  Execute(obj);
+//  
+//  
+//}
+//function compare(str1,str2,strformat)
+//{
+//  switch ( aqString["Compare"](str1,str2,false) )
+//  {
+//    case 1:
+//    strformat=""
+//  
+//      break;
+//  
+//    case 2:
+//    strformat =""
+//      break;
+//  }
+//  
+//  Log["Event"](aqString["Format"](str1,str2,strformat))
+//}
+//
+//function Add(App)
+//{
+//  Utils["Timers"]["Items"](App,true)
+//}
+//function Radiobtncheck(btn,value)
+//{
+//  
+//  objectToVerify = eval(btn);
+//  if(objectToVerify["Enabled"] == aqConvert["VarToBool"](value)) {
+//        
+//          
+//              Log["Event"]("radio Button is Enabled");
+//        
+//              return;
+//    
+//          }
+//      
+//      if(value == "Checked")
+//      {
+//      
+//        if(objectToVerify["IsChecked"])
+//        {
+//        
+//          Log["Event"]("Radion Button is Checked");
+//          
+//          return; 
+//          }
+//      } 
+//}
+//
+//function attach(obj,file,click)
+//{
+//  IssueTracking["CreateWorkItem"](obj)
+//  AttachDocument(obj,file,Click)
+//}

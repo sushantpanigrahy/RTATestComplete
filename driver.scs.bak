@@ -1,0 +1,214 @@
+﻿//USEUNIT execution
+//USEUNIT frameWork_commonLib
+//USEUNIT frameWork_databaseLib
+//USEUNIT frameWork_exceptionHandellingLib
+//USEUNIT frameWork_verificationLib
+
+
+//Read Testcase from EXcel and Execute the testcase//
+//This function will trigger the execution from command-line execution of quality center.
+
+function driver() 
+{
+ try
+ {
+      
+    sTempFolder = Sys["OSInfo"]["TempDirectory"];
+      
+    var Excel = Sys["OleObject"]("Excel.Application");
+        
+    var configPath = "C:\\FrameworkFiles\\configuration - Copy.xlsx";
+          
+    Excel["Workbooks"]["Open"](configPath);
+      
+    tCFolderLocation = VarToString(Excel["Cells"](2, 2));
+      
+    tCNameFromQC = VarToString(Excel["Cells"](3, 2));
+  
+    resultsPath = VarToString(Excel["Cells"](4, 2))+ "\\";
+          
+    browserName = eval(VarToString(Excel["Cells"](13, 2)));
+          
+    appType = VarToString(Excel["Cells"](14, 2));
+          
+    appPath = VarToString(Excel["Cells"](15, 2));
+          
+//    if(Sys.WaitBrowser().Exists)
+//    {
+//     Sys["Browser"]()["Close"]()
+//    }
+//          
+//    if(appType = "Web")
+//    {
+//       Browsers["Item"](browserName)["Run"](appPath); // fromat should be "https://URL/"
+//              
+//    } 
+//  if (appType = "Windows") 
+//    {
+//      WshShell["Run"](appPath);
+//            
+//    } 
+//    else 
+//    {
+//     Log["Error"]("Applicationn Path in Configuration is Incorrect");  
+//            
+//    }
+//          
+//  aqUtils["Delay"](5000,"Waiting to load all browser elements on screen");
+  
+  readTestsFromXML(tCFolderLocation, resultsPath); // This function is to read testcase from excel and start execution   
+          
+  Sys["Browser"]()["Close"]();
+          
+  }
+  
+  catch(ex)
+  {        
+          
+    Log["Error"]("Exception Handeler Triggered");
+            
+    Log["Error"]("Failure Exception Message:- " + ex["message"]);
+            
+    Log["Error"]("Failure Exception Number:- " + ex["number"]);
+            
+    Log["Error"]("Failure Exception Description:- " + ex["description"]);  
+              
+  }
+            
+//          aqFileSystem["DeleteFile"](sTempFolder + "*.xls");
+          
+    killXcel();
+            
+}
+
+    
+//This function read ReadDataFromXML function for testcase execution and 
+ // loop through executing all testcase xml files.
+ 
+function readTestsFromXML(tCFolderLocation, resultsPath)
+{
+  var Doc, s, Nodes, ChildNodes, i, Node;
+  var oFolder, colFiles, f;
+  
+  oFolder = aqFileSystem["GetFolderInfo"](tCFolderLocation);
+  colFiles = oFolder["Files"];
+  
+  // Create a COM object
+  Doc = Sys["OleObject"]("Msxml2.DOMDocument");
+
+  Doc["async"] = false;
+  
+  while (colFiles["HasNext"]()) {
+      
+    testCaseFileName = colFiles["Next"]();
+    
+    aqTestCase["Begin"](testCaseFileName["Name"]);
+    
+    Log["Event"]("TestCase File Name:- " + testCaseFileName["Name"]);
+    
+  
+  // Load data from a file
+  // We use the file created earlier
+      
+  Doc["load"](tCFolderLocation + testCaseFileName["Name"]);
+  
+  // Report an error, if, for instance, the markup or file structure is invalid
+  if(Doc["parseError"]["errorCode"] != 0)
+  {
+    s = "Reason:\t" + Doc["parseError"]["reason"] + "\n" +
+        "Line:\t" + aqConvert["VarToStr"](Doc["parseError"]["line"]) + "\n" +
+        "Pos:\t" + aqConvert["VarToStr"](Doc["parseError"]["linePos"]) + "\n" +
+        "Source:\t" + Doc["parseError"]["srcText"];
+    // Post an error to the log and exit
+    Log["Error"]("Cannot parse the testcase files.", s);
+    return;
+  }
+  
+//    //Define the namespace of the node   
+//  Doc.setProperty('SelectionNamespaces', 'xmlns:a="CheckBoxes"');
+  
+//  Node = Doc["documentElement"];
+  
+  // Use an XPath expression to obtain a list of "control" nodes
+  TestCasesLists = Doc["selectNodes"]("//testCaseName");
+  Actions = Doc["selectNodes"]("//actionName");
+  ObjectNames = Doc["selectNodes"]("//objectName");
+  ScreenNames = Doc["selectNodes"]("//screenName");
+  InputDatas = Doc["selectNodes"]("//inputData");
+  ObjectPaths = Doc["selectNodes"]("//objectPath");
+  
+//  for(i = 0; i < TestCasesLists["length"]; i++){
+    
+    TestCasesList = TestCasesLists["item"](i);
+    ChildTCNodes = TestCasesList["childNodes"];
+    if(ChildTCNodes["length"] != 0){
+      TestCasesName = ChildTCNodes["item"](0)["text"]
+    } else {
+      TestCasesName = ""
+    }
+    
+    Log["Event"]("TestCase Name:- " + TestCasesName)
+  
+  // Process the node
+  for(j = 0; j < Actions["length"]; j++)
+  {
+    // Get the node from the collection of the found nodes
+    Action = Actions["item"](j);
+    ObjectName = ObjectNames["item"](j);
+    ScreenName = ScreenNames["item"](j);
+    InputData = InputDatas["item"](j);
+    ObjectPath = ObjectPaths["item"](j);
+    // Get child nodes
+    ChildANodes = Action["childNodes"];
+    if(ChildANodes["length"] != 0){
+      testStepAction = ChildANodes["item"](0)["text"]
+    } else {
+      testStepAction = ""
+    }
+    ChildONodes = ObjectName["childNodes"];
+    if(ChildONodes["length"] != 0){
+      testStepObject = ChildONodes["item"](0)["text"]
+    } else {
+      testStepObject = ""
+    }
+    ChildSNodes = ScreenName["childNodes"];
+    if(ChildSNodes["length"] != 0){
+      testStepScreen = ChildSNodes["item"](0)["text"]
+    } else {
+      testStepScreen = ""
+    }
+    ChildINodes = InputData["childNodes"];
+    if(ChildINodes["length"] != 0){
+      testStepInput = ChildINodes["item"](0)["text"]
+    } else {
+      testStepInput = ""
+    }
+    ChildOPNodes = ObjectPath["childNodes"];
+    if(ChildOPNodes["length"] != 0){
+      testStepObjectPath = ChildOPNodes["item"](0)["text"]
+    } else {
+      testStepObjectPath = ""
+    }
+    // Execute Tests From XML files
+    
+    testStepScreenObject = testStepScreen + " " + testStepObject
+    
+    Log["Message"]( testStepAction + " " + testStepScreenObject + " " + testStepInput + " " + testStepObjectPath);
+    
+    ExecuteAction(testStepAction, testStepScreen + " " + testStepObject, testStepObjectPath, testStepInput)    
+      
+    Log["Event"](testStepAction + " " + testStepScreen + " " + testStepObject + " " + testStepObjectPath + " " + testStepInput)
+  }
+  
+//  }
+
+//    Log["SaveResultsAs"]("C:\\FrameworkFiles\\RTA XML Results\\", lsJUnit, true, 2) // results are stored in JUnit XML format in specified location
+    
+    aqTestCase["End"]();
+    
+    //Sys["Browser"]()["Close"]();
+
+    Log["SaveResultsAs"](resultsPath, lsHTML) // results are stored in HTML format in specified location
+
+    }
+}

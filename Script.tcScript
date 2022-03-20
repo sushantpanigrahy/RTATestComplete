@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Root signature="{9252F941-DB23-4FCA-AA50-858B33BB4A19}" version="11.40">
+	<children>
+		<folder name="driver">
+			<child name="driver" key="{1CBDB5EE-2D12-4B72-BB14-53F78A15C5F2}" path="driver.scs" />
+			<child name="execution" key="{FBE7F2B7-8541-4A80-8510-9A5D05BF1FF4}" path="execution.scs" />
+		</folder>
+		<folder name="Framework">
+			<child name="frameWork_commonLib" key="{7908C592-04D3-4D73-A123-EEACB9D28E57}" path="frameWork_commonLib.scs" />
+			<child name="frameWork_databaseLib" key="{365556FD-6BF3-4C5B-ADD1-93CACE9399B0}" path="frameWork_databaseLib.scs" />
+			<child name="frameWork_exceptionHandellingLib" key="{3676DECB-A718-42CD-8195-4C3150121EAA}" path="frameWork_exceptionHandellingLib.scs" />
+			<child name="frameWork_verificationLib" key="{73313888-E7E5-4110-BCA0-6B363039E727}" path="frameWork_verificationLib.scs" />
+			<child name="frameWork_browserLoding" key="{4BCE230F-74C5-4113-BD1E-25E9155441CC}" path="frameWork_browserLoding.scs" />
+		</folder>
+	</children>
+</Root>

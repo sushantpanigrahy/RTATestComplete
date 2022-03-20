@@ -1,0 +1,74 @@
+﻿
+
+// clean the state of applciation and post failed results to QC.
+  function logOnError(testCaseFailed,stepNumber,eResults) {
+      
+      var ForReading = 1, ForWriting = 2, ForAppending = 8, TristateFalse = 0;
+
+      var filePath = "C:\\FrameWorkFiles\\TestCaseFailedStep.txt";
+  
+        Log["SaveResultsAs"](eResults, lsMHT);
+        
+      var failedStepNumber = stepNumber - 1;
+  
+        Log["Message"]("TestCase step "+ failedStepNumber + " Failed");
+  
+        fileSystem = Sys["OleObject"]("Scripting.FileSystemObject");
+  
+        if (!fileSystem["FileExists"](filePath))
+     
+            {
+    
+               objFile = fileSystem["CreateTextFile"](filePath);
+    
+               objFile["Close"]();
+            }
+  
+        testsFailedFile = fileSystem["OpenTextFile"](filePath, ForWriting, TristateFalse);
+  
+        failedStep = testCaseFailed + "/" + failedStepNumber;
+  
+        testsFailedFile["Write"](failedStep);
+  
+        testsFailedFile["Close"]();
+  
+        Log["Message"](testCaseFailed + " Test Execution Failed in Step " + failedStepNumber)
+        
+        killXcel();   
+      
+}
+
+// kill all XCel applications and delete all XCel files in temp folder.
+  function killXcel() { 
+
+//      var sTempFolder = Sys["OSInfo"]["TempDirectory"];
+      
+      var appState = WMI["ProcessExists"]("EXCEL.EXE");
+    
+      while(appState) {
+    
+          var xCelApplication = Sys["Process"]("EXCEL");
+          
+          xCelApplication["Terminate"]();
+          
+          appState = WMI["ProcessExists"]("EXCEL.EXE");
+    
+      }
+    
+//      aqFileSystem["DeleteFile"](sTempFolder + "\\" + "*.xls");
+//    
+//      aqFileSystem["DeleteFile"](sTempFolder + "\\" + "*.xlsx");
+//    
+//      aqFileSystem["DeleteFile"]("C:\\Temp\\" + "*.xls");
+//    
+//      aqFileSystem["DeleteFile"]("C:\\Temp\\" + "*.xlsx");
+    
+  }
+// to check the state of application and set state to PM screen if necessary.
+  function checkApplicationState() 
+  {
+
+//      
+
+  }
+

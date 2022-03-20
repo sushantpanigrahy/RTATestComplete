@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Root Signature="{5DCBAC3B-D39C-497C-9BE8-744CBADD37AA}" NameMappingVersion="7" SaveImages="0">
+	<Storages Current="0">
+		<Child Name="Default Configuration" />
+	</Storages>
+	<Nodes Name="NameMapping" Key="{BE401E45-B2D6-4FBA-931A-C2117D5C51AD}">
+		<Children>
+			<Child Name="Sys" Key="{22FA3151-FB0B-410A-A750-39F9F4717B9E}">
+				<Properties>
+					<Property Name="Name">
+						<Value Value="Sys" />
+					</Property>
+				</Properties>
+				<Children>
+					<Child Name="RTA_Client" Key="{3D2CE0D7-FA96-49E1-8EF6-46FB8BFA4F3B}">
+						<Properties>
+							<Property Name="ProcessName">
+								<Value Value="RTA.Client" />
+							</Property>
+						</Properties>
+						<Children>
+							<Child Name="HwndSource_window" Key="{8D02D90C-5E76-4178-916E-13C4A3CC604E}">
+								<Properties>
+									<Property Name="RootVisual.Name">
+										<Value Value="window" />
+									</Property>
+								</Properties>
+								<Children>
+									<Child Name="window" Key="{8E2966A9-60E6-426B-8BAF-38C26DD5C14B}">
+										<Properties>
+											<Property Name="ClrFullClassName">
+												<Value Value="RTA.Client.Views.ShellView" />
+											</Property>
+										</Properties>
+										<Children>
+											<Child Name="dataGrid" Key="{C7910761-D41E-4B74-80D1-F46CC684FC98}" ExtendedFind="True">
+												<Properties>
+													<Property Name="WPFControlName">
+														<Value Value="dataGrid" />
+													</Property>
+												</Properties>
+												<Children>
+													<Child Name="DatagridcellObjectRightclickMenu" Key="{48B2A4FD-0E0E-41C1-9149-3D194B3CA8A6}" ExtendedFind="True">
+														<TypeInfo Item0="{D62DFB9A-1629-454E-BCCC-FD2867D13ACA}" />
+														<Properties>
+															<Property Name="ClrFullClassName">
+																<Value Value="System.Windows.Controls.DataGridCell" />
+															</Property>
+															<Property Name="WPFControlText">
+																<Value Value="Object Rightclick Menu" />
+															</Property>
+														</Properties>
+													</Child>
+													<Child Name="DatagridcellResetPassword" Key="{DFB02A12-5CFB-4AD9-8A5E-7304B66E5A81}" ExtendedFind="True">
+														<TypeInfo Item0="{D62DFB9A-1629-454E-BCCC-FD2867D13ACA}" />
+														<Properties>
+															<Property Name="ClrFullClassName">
+																<Value Value="System.Windows.Controls.DataGridCell" />
+															</Property>
+															<Property Name="WPFControlText">
+																<Value Value="Reset Password" />
+															</Property>
+														</Properties>
+													</Child>
+													<Child Name="DatagridcellCreateTestSuitePopup" Key="{37283CE7-73BA-469B-AAA9-8D841D3E638D}" ExtendedFind="True">
+														<TypeInfo Item0="{D62DFB9A-1629-454E-BCCC-FD2867D13ACA}" />
+														<Properties>
+															<Property Name="ClrFullClassName">
+																<Value Value="System.Windows.Controls.DataGridCell" />
+															</Property>
+															<Property Name="WPFControlText">
+																<Value Value="Create Test Suite Popup" />
+															</Property>
+														</Properties>
+													</Child>
+													<Child Name="DatagridcellScreenRightclickMenu" Key="{BA9815C4-4C24-428C-9B10-95C70DD29425}" ExtendedFind="True">
+														<TypeInfo Item0="{D62DFB9A-1629-454E-BCCC-FD2867D13ACA}" />
+														<Properties>
+															<Property Name="ClrFullClassName">
+																<Value Value="System.Windows.Controls.DataGridCell" />
+															</Property>
+															<Property Name="WPFControlText">
+																<Value Value="Screen Rightclick Menu" />
+															</Property>
+														</Properties>
+													</Child>
+													<Child Name="DatagridcellLogIn" Key="{CC895375-4C63-44BA-9C48-B5A6DD03F26C}" ExtendedFind="True">
+														<TypeInfo Item0="{D62DFB9A-1629-454E-BCCC-FD2867D13ACA}" />
+														<Properties>
+															<Property Name="ClrFullClassName">
+																<Value Value="System.Windows.Controls.DataGridCell" />
+															</Property>
+															<Property Name="WPFControlText">
+																<Value Value="Log in" />
+															</Property>
+														</Properties>
+													</Child>
+													<Child Name="DatagridcellValidateRightclickMenu" Key="{75E87256-7479-4B48-9780-D43EBDFB4AD8}" ExtendedFind="True">
+														<TypeInfo Item0="{D62DFB9A-1629-454E-BCCC-FD2867D13ACA}" />
+														<Properties>
+															<Property Name="ClrFullClassName">
+																<Value Value="System.Windows.Controls.DataGridCell" />
+															</Property>
+															<Property Name="WPFControlText">
+																<Value Value="Validate Rightclick Menu" />
+															</Property>
+														</Properties>
+													</Child>
+												</Children>
+											</Child>
+										</Children>
+									</Child>
+								</Children>
+							</Child>
+						</Children>
+					</Child>
+				</Children>
+			</Child>
+		</Children>
+	</Nodes>
+	<LogicalNodes Name="Aliases" Owner="{BE401E45-B2D6-4FBA-931A-C2117D5C51AD}">
+		<Child Name="RTA_Client" Owner="{3D2CE0D7-FA96-49E1-8EF6-46FB8BFA4F3B}">
+			<Child Name="HwndSource_window" Owner="{8D02D90C-5E76-4178-916E-13C4A3CC604E}">
+				<Child Name="window" Owner="{8E2966A9-60E6-426B-8BAF-38C26DD5C14B}">
+					<Child Name="dataGrid" Owner="{C7910761-D41E-4B74-80D1-F46CC684FC98}">
+						<Child Name="DatagridcellObjectRightclickMenu" Owner="{48B2A4FD-0E0E-41C1-9149-3D194B3CA8A6}" />
+						<Child Name="DatagridcellResetPassword" Owner="{DFB02A12-5CFB-4AD9-8A5E-7304B66E5A81}" />
+						<Child Name="DatagridcellCreateTestSuitePopup" Owner="{37283CE7-73BA-469B-AAA9-8D841D3E638D}" />
+						<Child Name="DatagridcellScreenRightclickMenu" Owner="{BA9815C4-4C24-428C-9B10-95C70DD29425}" />
+						<Child Name="DatagridcellLogIn" Owner="{CC895375-4C63-44BA-9C48-B5A6DD03F26C}" />
+						<Child Name="DatagridcellValidateRightclickMenu" Owner="{75E87256-7479-4B48-9780-D43EBDFB4AD8}" />
+					</Child>
+				</Child>
+			</Child>
+		</Child>
+	</LogicalNodes>
+</Root>

@@ -1,0 +1,179 @@
+﻿//USEUNIT frameWork_commonLib
+//USEUNIT frameWork_databaseLib
+//USEUNIT frameWork_exceptionHandellingLib
+//USEUNIT frameWork_verificationLib
+
+//This function execute testcase each step of testcase in application.
+function ExecuteAction(action, objectName, objectGraph, input)
+{
+  aqUtils["Delay"](3000,"Waiting for Object to be accessible");
+  switch (action)
+  {
+    
+    case "Select":
+          
+    select(objectGraph,input)
+        
+    break;
+    
+    case "Click":
+          
+    click(objectGraph, objectName)
+        
+    break;
+    
+    case "Dropdown":
+          
+    Dropdown(objectGraph, objectName)
+        
+    break;
+    
+    case "Enter":
+          
+    enter(objectGraph, input)
+        
+    break;
+    
+    case "DoubleClick":
+          
+    doubleClick(objectGraph)
+              
+    break;  
+    
+    case "Drag":
+          
+    drag(objectName, objectGraph, input)
+              
+    break; 
+            
+    case "SwitchState":
+               
+    switchState(objectGraph,input) 
+           
+    break;
+          
+    case "Set":
+          
+    set(objectName,objectGraph, input) 
+              
+    break; 
+            
+    case "Press":
+          
+    press(input); 
+              
+    break; 
+            
+    case "Modify":
+              
+    enter(objectGraph, input);
+              
+    break; 
+              
+    case "Verify":
+          
+    verifyDetails(objectName, objectGraph,input)
+        
+    break;
+            
+    case "RightClick":
+          
+    rightClick(objectGraph, input)
+        
+    break;  
+            
+    case "SystemTimeChange":
+                
+    SetSystemTime()
+                
+    break;  
+              
+    case "SystemCurrentDate":
+            
+    SetCurrentDate()
+                
+    break;  
+            
+    case "SystemTimeChange":
+            
+    ASetSystemTime(input)
+                
+    break;
+            
+    case "ReportRightClick":
+          
+    reportRightClick()
+        
+    break; 
+            
+    case "Wait":
+          
+    waitForScreen(input)
+        
+    break; 
+            
+    case "Expand":
+          
+    expand(objectGraph)
+        
+    break;      
+            
+    case "Note":
+          
+    storeData(objectName,objectGraph)
+        
+    break; 
+            
+    case "Scroll":
+          
+    scroll(objectName,objectGraph,input)
+        
+    break;  
+           
+    case "DeleteFolder":
+            
+    DeleteFolder();
+            
+    break;
+              
+    case "LaunchandLogin":
+    break;
+              
+    case "DeleteFolder":
+              
+    break;
+            
+    case "Terminate":
+            
+    terminateProcess(input);
+              
+    case "Navigate":
+            
+    LaunchApp(input);
+    break;
+     
+     //Add new Case
+     //Date:24 feb 2022
+    case "Launch":
+    LaunchRTA(input)
+    break;
+    //Add new Case
+     //Date:25 feb 2022
+    case "Close":
+    Close(objectGraph, objectName)
+    break;
+    
+    //Add new Case
+     //Date:25 feb 2022
+    case "CheckBox":
+    CheckBox(objectGraph,input)
+    
+    break;
+             
+    default:        
+          
+    break;
+  
+  }
+
+}

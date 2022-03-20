@@ -1,0 +1,830 @@
+﻿//USEUNIT frameWork_commonLib
+
+// This function takes object name as input and divert to specific verifcation sub function
+// perform verfication with input in UI
+function verifyDetails(objectname,verifyObjPath,verificationValue) 
+{     
+  var valueSubString = aqString["Find"](verificationValue, "Step");
+  if(valueSubString != -1) 
+  {
+   verificationValue = Project["Variables"]["noteValue"];
+  }
+  if(aqString.find(objectname,"XML") > -1)
+  {
+  VerifyValueInXML(verificationValue); 
+  //VerifyDeleteFolderOrfile(inputValue);
+  return;
+  }
+ 
+  //      if(verifyObjPath){   
+  if(verifyObjPath != null && verifyObjPath != "")
+  {
+   verifyObj = eval(verifyObjPath);
+   if(aqString["Find"](verifyObj["WPFControlText"],"Text") > -1)
+   {
+    var objectname = "Verify Text Box";
+    Log["Event"]("Verify Text Box");
+        
+   } 
+   
+   
+   else if(aqString["Find"](verifyObj["WPFControlText"],"Button") > -1 ||
+          
+  aqString["Find"](verifyObj["WPFControlText"],"CheckBox") > -1)
+  {
+          
+    objectname = "Verify Button";
+     Log["Event"]("Verify Button");
+        
+  } 
+  else if(aqString["Find"](verifyObj["WPFControlText"],"get_TextView") > -1) 
+   {
+     objectname = "Verify TextView";
+   }
+   
+  else if(aqString["Find"](verifyObj["WPFControlText"],"Switch") > -1) 
+  {//Condition for verifying Switch Boxes
+          
+  objectname = "Verify Switch";
+              
+  //Condition for verifying FloatingPointNumericStepper
+  } 
+  else if(aqString["Find"](verifyObj["WPFControlText"],"FloatingPointNumericStepper") > -1) 
+  { 
+          
+  objectname = "Verify FloatingPointNumericStepper";
+          
+  }
+  else if(aqString["Find"](verifyObj["WPFControlText"],"DatePicker") > -1) 
+  { 
+          
+  objectname = "Verify DateTime";
+          
+  }
+      
+  }
+
+     
+  switch (objectname)
+       
+  {
+    
+  case "Verify Button":
+          
+    verifyButtonState(verifyObj,verificationValue);
+        
+  break;
+            
+  case "Verify Text Box":
+          
+    verifyTextBoxContents(verifyObj,verificationValue);
+              
+  break;
+  
+  case "Verify Text":
+          
+    verifyText(verifyObj,verificationValue);
+              
+  break;
+            
+  case "Help Screen":
+          
+    if((verifyObj["IsLoaded"])){
+                    
+          Log["Event"]("Help Screen displayed");
+                      
+          return;
+     }
+              
+  break;
+            
+  case "Verify Switch":
+          
+    verifySwitchState(verifyObj,verificationValue);
+                
+  break;
+            
+  case  "Verify FloatingPointNumericStepper":
+                
+    verifyFloatingPointNumericStepper(verifyObj,verificationValue);
+                
+  break;
+            
+  case "VerifyDateTime":
+                
+    verifyDateTime(objectname,verifyObjPath,verificationValue);
+                
+  break; 
+              
+  case "Deleted Folder":
+            
+  DeleteFolder();
+           
+  break;
+            
+  case "Audit.log":
+            
+  verifyAuditLog(verificationValue);
+           
+  break;
+            
+          
+  default:    
+          
+  break;
+  
+  }
+       
+}
+
+// to verify enabled/disabled state of button or field in the application
+  function verifyButtonState(verifyObj,value) 
+  {
+
+      
+      objectToVerify = eval(verifyObj);
+      
+      if(value == "Checked"){
+      
+        if(objectToVerify["IsChecked"]){
+        
+          Log["Event"]("Button is Checked");
+          
+          return;
+        
+        } else {
+        
+          Log["Error"]("Button should be checked but is unchecked");
+          
+          throw "TestCase Verification Failed";
+        
+        }
+      
+      } else if(value == "UnChecked"){
+      
+        if(!objectToVerify["IsChecked"]["OleValue"]){
+        
+          Log["Event"]("Button is not Checked");
+          
+          return;
+        
+        } else {
+        
+          Log["Error"]("Button should be unchecked but is checked");
+          
+          throw "TestCase Verification Failed";
+        
+        }
+      
+      }
+      
+      if(value =="Visible" || value == "NotVisible") {
+    
+          if(value == "NotVisible") {
+      
+              value = false;
+    
+          } else {
+      
+              value = true;
+    
+          }
+          
+          if(objectToVerify["Visible"] == value){
+          
+            Log["Event"]("Button Exists");
+            
+            return;
+          
+          } else {
+          
+            Log["Error"]("Button is not visible on the screen");
+            
+            return;
+          
+          }
+      }
+      
+    
+	    if(value =="Disabled" || value == "Enabled") {
+    
+          if(value == "Disabled") {
+      
+              value = false;
+    
+          } else {
+      
+              value = true;
+    
+          }
+          
+          if(objectToVerify["Enabled"] == aqConvert["VarToBool"](value)) {
+        
+          
+              Log["Event"]("Button is Enabled");
+        
+              return;
+    
+          } else {
+      
+              Log["Error"]("Button is Disabled");
+        
+//              return;
+              throw "TestCase Verification Failed";
+          
+          }
+      
+      } else {
+          
+          if(objectToVerify["WPFControlText"] == value) {
+      
+                Log["Event"](value = " Text Match with UI");
+      
+                return;
+                
+          } else {
+          
+          Log["Error"]("Verification Failed Actual: " + objectToVerify["WPFControlText"] + " Expected: " + value);
+        
+//              return;
+          throw "TestCase Verification Failed";
+          
+          }
+      
+      }     
+  
+  }
+
+// to verify list count in the application
+  function verifyListCount(verifyObj,verificationValue) 
+  {
+
+	  objectToVerify = eval(verifyObj);
+      
+    syncTime(objectToVerify);
+
+    if( IntToStr(objectToVerify["wItemCount"]) ==  verificationValue) {
+          
+        Log["Event"]("Verification Count of " + verificationValue + " Is Correct");
+        
+        return;
+        
+    } else {
+          
+        Log["Error"]("Verification Count failed, Expected = " + verificationValue + " ,Actual = " + objectToVerify["wItemCount"])
+        
+        throw "TestCase Verification Failed";
+               
+    }
+
+  }
+
+function verifyText(verifyObj,verificationValue)
+{
+  objectToVerify = eval(verifyObj);
+  //  Condition to verify the Date And Time.
+    if(verifyObj["WPFControlText"] == "get_TextView ") 
+    {
+      
+        verifytext(verifyObj,verificationValue);
+      
+        return;
+        }
+  
+}
+// to verify contents in the application fields
+  
+  
+  function verifyTextBoxContents(verifyObj,verificationValue) 
+  {
+  
+    objectToVerify = eval(verifyObj);
+    
+//  Condition to verify the Date And Time.
+    if(verifyObj["WPFControlText"] == "Date and Time : ") {
+      
+        verifyAcqScanDateAndTime(verifyObj,verificationValue);
+      
+        return;
+    }  
+    
+//  Condition to verify the error message displayed in Text boxes.
+    if(verificationValue == "Enabled" || verificationValue  == "Disabled" ) {
+      
+        verifyButtonState(objectToVerify,verificationValue);
+      
+        return;
+    }   
+    
+    if(objectToVerify["DataContext"]["Error"]!= null && objectToVerify["DataContext"]["Error"]["OleValue"]!= "") {
+      
+        objectValue = aqString["Trim"](objectToVerify["DataContext"]["Error"]["OleValue"],aqString["stAll"]);
+    
+    } else if(objectToVerify["DataContext"]["Message"]!= null) {
+    
+        objectValue = aqString["Trim"](objectToVerify["DataContext"]["Message"]["OleValue"],aqString["stAll"]);    
+    
+    } else {
+        
+        objectValue = aqString["Trim"](objectToVerify["Text"]["OleValue"],aqString["stAll"]);
+        
+    
+    }
+    
+    //This part of the code splits the object value and verification value
+    //This is used to remove any extra spaces and new line characters.
+    if(aqString["Find"](objectValue,".")>-1){
+    
+      objectValue = objectValue["split"](".");
+      
+      verificationValue = verificationValue["split"](" ");
+      
+      combobjectValueStr = "";
+      
+      combverificationValueStr = "";
+      //Splits the object value string based on character "."
+      for(i=0;i<objectValue["length"];i++){
+      
+          if(aqString["Trim"](objectValue[i],aqString["stAll"])!= ""){
+          
+            combobjectValueStr =  combobjectValueStr + aqString["Trim"](objectValue[i],aqString["stAll"]);
+            
+            if(i + 1 < objectValue["length"]){
+            
+              combobjectValueStr =  combobjectValueStr + ".";
+              
+            }
+            
+          }
+          
+      }
+      //Splits the verification value string based on character " "
+      for(i=0;i<verificationValue["length"];i++){
+      
+          if(aqString["Trim"](verificationValue[i],aqString["stAll"])!= ""){
+          
+            combverificationValueStr =  combverificationValueStr + aqString["Trim"](verificationValue[i],aqString["stAll"]);
+            
+            if(i + 1 < verificationValue["length"]){
+            
+              combverificationValueStr =  combverificationValueStr + " ";
+              
+            }
+            
+          }
+      }
+    }else{
+      combobjectValueStr = objectValue;
+      
+      combverificationValueStr = verificationValue;
+      
+    }
+    if(combobjectValueStr == combverificationValueStr) {
+    
+        Log["Event"](combverificationValueStr + " is present in the UI");
+        
+        return;
+        
+    } else {
+        
+        Log["Error"]("Text Verification Failed Actual: "+ combobjectValueStr + " Expected: " + combverificationValueStr);
+        
+        throw "TestCase Verification Failed";
+    
+    }
+    
+  }
+
+// to verify contents in combobox in the application
+function verifyDetailsInCombo(verifyObj,verificationValue) 
+{
+      
+      objectToVerify = eval(verifyObj);
+      
+      dropdownListCount = objectToVerify["wItemCount"];
+      
+      if(dropdownListCount == 0) {
+          
+          Log["Message"]("List Is Empty");
+      
+      } 
+      else 
+      {
+          
+//        Click operation is required to click on the combobox
+          
+          objectToVerify["Click"]();
+          
+          selectComboBox(verifyObj,verificationValue);  
+                      
+      }
+  }
+
+// to verify radio button state in the application
+function verifySwitchState(verifyObj,verificationValue) 
+  {
+  
+      if(verifyObj["SwitchState"] == verificationValue) {
+    
+          Log["Message"]("SwitchState is in "+ verificationValue + " State" );
+      } else {
+    
+          Log["Error"]("SwitchState is in "+ verifyObj["SwitchState"] + " State but should be in "+ verificationValue +" State");
+      
+          throw "TestCase Verification Failed";
+          
+      }
+      
+  }
+
+// to verify floating button state in the application
+function verifyFloatingPointNumericStepper(verifyObj,verificationValue) 
+{
+
+    if(verifyObj["DataContext"]["Error"]!= null && verifyObj["DataContext"]["Error"]["OleValue"]!= "") {
+      
+        objectValue = aqString["Trim"](verifyObj["DataContext"]["Error"]["OleValue"],aqString["stAll"]);
+    
+    } else {
+        
+        objectValue = aqString["Trim"](verifyObj["Value"]["OleValue"],aqString["stAll"]);
+    
+    }
+    
+    if(objectValue == verificationValue) {
+        
+        Log["Event"](verificationValue + " is present in the Text Box");
+        
+        return;
+    
+    }  else {
+        
+        Log["Error"]("Verification Failed Actual: " + objectValue + " Expected: " + verificationValue);
+        
+        throw "TestCase Verification Failed";
+        
+    }
+    
+  }
+
+// to verify value in combobox in the application
+function verifyComboBox(verifyObj,verificationValue) 
+{
+
+//  This logic will check the state and reroute to verify object state function
+    if(verificationValue == "Enabled" || verificationValue  == "Disabled" ) { 
+      
+        verifyButtonState(verifyObj,verificationValue);
+      
+        return;
+  
+    } 
+
+//  This logic will verify the default text display in combobox field 
+    if(verifyObj["wText"] == verificationValue) { 
+        
+        Log["Event"](verificationValue + " is present in the Text Box");
+        
+        return;
+    
+    } else {
+        
+        Log["Error"]("Verification Failed Actual: " + verifyObj["wText"] + " Expected: " + verificationValue);
+    
+        throw "TestCase Verification Failed";
+        
+    }
+    
+  }
+  
+// verify All search results header name
+function verifyHeaderLabel(verifyObj,verificationValue) 
+{ 
+
+    objectToVerify = eval(verifyObj);
+    
+    var headerValue = objectToVerify["DataContext"]["Header"]["OleValue"];
+    
+    if(headerValue == verificationValue) {
+        
+        Log["Event"](verificationValue + " is matching with Expected header value");
+        
+        return;
+    
+    } else {
+        
+        Log["Error"](verificationValue + " is not matching with Expected header value");
+        
+        throw "TestCase Verification Failed";
+    
+    }
+
+  }
+  
+// verify multiple Selection in the list
+function verifyMultiplePatientSelection(verifyObj) 
+{ 
+
+    objectToVerify = eval(verifyObj);
+    
+    var selectedItem  = objectToVerify["SelectedItems"]["Count"];
+    
+    if(selectedItem == 1) {
+        
+        Log["Event"]("multiple items can't be selected");
+        
+        return;
+    
+    } else {
+        
+        Log["Error"]("Multiple items can be selected");
+        
+        throw "TestCase Verification Failed";
+    
+    }
+
+  }
+
+  //To verify the details in the List
+function verifyDetailsInThelist(verifyObj,verificationValue) 
+{
+
+      objectToVerify = eval(verifyObj);
+      
+}
+
+function verifyAuditLog(verificationValue)
+{
+  logFilePath = logFolderPath + "\\audit.log"
+  
+  var auditLogFile = aqFile["OpenTextFile"](logFolderPath + "\\audit.log",aqFile["faRead"], aqFile["ctUnicode"]);
+  
+  var splitValue = verificationValue["split"](",")
+  
+  var i = 0
+  
+  while(i < splitValue["length"]) {
+  
+    while(! auditLogFile.IsEndOfFile()){
+  
+      var auditLogNode = auditLogFile["ReadLine"]();
+      
+      auditLogNode = aqString["Replace"](auditLogNode," ","")
+      
+      trimmedSplitValue = aqString["Replace"](splitValue[i]," ","");
+    
+      if(aqString["Find"](auditLogNode,trimmedSplitValue) > -1){
+        
+        Log["Event"](splitValue[i] + " found in Audit Log file")
+        
+        i++;
+        
+        return;
+      
+      }
+  
+    }
+    
+    if(auditLogFile.IsEndOfFile()){
+    
+      Log["Error"](splitValue[i] + " Not found in Audit Log file");
+      
+      throw "TestCase Verification Failed";
+    
+    }
+  
+  }
+
+}
+
+//Verify unique number on screen
+//Author:Sushant Panigrahy Ddate:31 jan 2022
+function VerifyUniqueNumber(verifyObj,verificationValue)
+{
+
+    var Number = eval(verifyObj);
+    var verificationValue = Number
+
+    for(var i=0; i<Number.length; i++)
+    {
+     if(Number[i] == verificationValue)
+      {
+         Log["Event"]("occurrence found at " + i + " th position and is " +Number[i]);
+         return;
+         
+      }
+      else
+      {
+        Log["Error"]("occurrence not found at " + i + " th position and is " +Number[i]);
+      }
+   }
+ 
+}
+
+
+//Verify file size
+//Author:Sushant Panigrahy Ddate:31 jan 2022
+function VerifyFileSize(verifyObj,verificationValue)
+{
+  
+ if (!aqFileSystem.Exists(verifyObj))
+      throw new Error("verifyObj not valid");
+          
+          // get all files, search sub-directories
+       verificationValue = aqFileSystem.FindFiles(verifyObj, "*.csv", true);
+ 
+ var  Size = -1;
+  if (verificationValue!=null)
+    Size = verificationValue["Item"](0)["Size"];
+  return Size;
+}
+
+//Verify file extension
+//Author:Sushant Panigrahy Ddate:31 jan 2022
+function VerifyFileExtension(verifyObj)
+{
+  objectToVerify = eval(verifyObj);
+  //var FolderExt = "C:\\FrameworkFiles\\testCaseXML\\1"
+  if (aqFileSystem.Exists(objectToVerify))
+  {
+    var files = aqFileSystem["GetFolderInfo"](objectToVerify)["Files"];
+    
+    if (files != null)
+    {
+      // Get the path to the first file
+      var firstFilePath = files["Item"](0)["Path"];
+    
+      // Obtain the file's extension
+      var fileExtension = aqFileSystem["GetFileExtension"](firstFilePath);
+    
+      // Post the extension to the test log
+     
+      Log["Event"]( "The extension of the first file: " + fileExtension );
+    }
+    else
+    {
+      
+      Log["Error"]("The specified folder does not contain any files")
+    }
+  }
+  
+}
+
+
+//Verify dropdown option
+//Author:Sushant Panigrahy Ddate:31 jan 2022
+function Verifydropdownoption(verifyObj,verificationValue)
+
+{
+          
+  if(verifyObj != null)
+      {
+      
+      verificationValue.ClickItem(verifyObj);
+      Log["Event"](verifyObj + " is selected for the Dropdown");
+      }
+  else
+      Log["Event"]("No text to select");
+  }
+  
+   
+
+
+
+//  var ComboBox;
+//  // Open the drop-down list if it is closed
+//  if (ComboBox["wIsDropDownListOpened"] == 0)
+//    ComboBox["DropDown"]();
+//    Log["Event"](ComboBox["Open drop down"]  );
+//  
+//  // Select an item and post it to log
+//  ComboBox["Keys"]("[Down][Down][Down]");
+//  ComboBox["CloseUp"]();
+//  Log["Event"](ComboBox["Select dropdown"]  );
+//  
+//  // Post the index of the selected item to the log
+//  Log["Event"](ComboBox["wSelectedItem"]);
+  
+
+
+
+//Verify verify data in document, pdf
+//Author:Sushant Panigrahy Ddate:31 jan 2022
+function verifydDatainDocumentAndPdf(Path1,Path2)
+{
+  if (((path1 != "") && (aqFile["Exists"](path1)) && (aqFileSystem["GetFileExtension"](path1) == "pdf"))
+    && ((path2 != "") && (aqFile["Exists"](path2)) && (aqFileSystem["GetFileExtension"](path2) == "pdf")))
+    {
+      // Get the text contents of PDF files
+      var str1 = PDF["ConvertToText"](path1);
+      var str2 = PDF["ConvertToText"](path2);
+
+      // Use the regular expression
+      // to replace the date/time stamp
+      regEx = /\d{1,2}.\d{1,2}.\d{2,4}\s\d{1,2}:\d{2}:\d{2}\s\w{2}/gim;
+
+      str1 = str1["replace"](regEx, "<ignore>");
+      str2 = str2["replace"](regEx, "<ignore>");
+
+      // Compare the resulting contents
+      return (str1 == str2);
+
+    }
+  else
+    return false;
+  
+}
+
+//verify tool tip
+//Author:Sushant Panigrahy Ddate:31 jan 2022
+function verifytooltip(verifyObj,value)
+{
+  objectToVerify = eval(verifyObj);
+
+
+        // is it there?
+        if (objectToVerify  != null && objectToVerify .Exists)
+        {
+          
+          //Check with text
+          if (value!= null && value.Exists)
+            return value;
+        }
+        
+        return null;
+}
+
+//verify model popup
+//Author:Sushant Panigrahy Ddate:31 jan 2022
+function verifyModelPopup(verifyObj)
+{
+  
+
+  // Obtains the desired object
+  var p = Sys["Process"]("Application");
+  var w = p["WinFormsObject"]("Form1");
+    
+  // Calls the method that displays a modal window
+  verifyObj = Runner["CallObjectMethodAsync"](w, "MyShowModalDialog", "Param1", "Param2");
+
+  // Simulates user actions over the modal window and closes it
+ 
+  w = p["WinFormsObject"]("ModalDialogForm");
+  if (w["Exists"])
+    w["WinFormsObject"]("OKButton")["ClickButton"](); // Close
+
+ 
+  // Waits for method completion
+  verifyObj["WaitForCompletion"](2000);
+
+  // Processes the result
+  if( verifyObj["ReturnValue"] == 1 )
+    Log["Message"]("Success");
+  else
+    Log["Message"]("Failure");
+}
+
+
+ //Verify Readwhole file
+function ReadWholeFile(verifyObj)
+{
+  
+  var s = aqFile["ReadWholeTextFile"](verifyObj, aqFile["ctANSI"]);
+  Log["Message"]("File entire contents:");
+  Log["Message"](s);
+}
+
+
+//Verify file in DB
+//Author:Sushant Panigrahy Ddate:31 jan 2022
+function VerifydatainDB(verifyObj,verificationValue)
+{
+  
+
+}
+
+//verify data in print preview
+//Author:Sushant Panigrahy Ddate:31 jan 2022
+function verifyDataInPrintPreview(verifyObj,verificationValue)
+{
+  
+}
+
+//Verify Verify Readonly
+//Author:Sushant Panigrahy Ddate:31 jan 2022
+function VerifyReadOnly(verifyObj)
+{
+  if (verifyObj == null || !aqFile.Exists(verifyObj))
+  throw new Error("verifyObj not valid");
+  // open each file and start looping the lines
+  var fileObj = aqFile.OpenTextFile(verifyObj, aqFile.faRead, aqFile.ctANSI, false);  
+  var arrayFile1Lines = [];
+  // Reads text lines from the file and posts them to the test log
+  while(!verifyObj.IsEndOfFile())
+  arrayFile1Lines.push(fileObj.ReadLine());
+  //
+  verifyObj.Close();
+        
+    
+}
+

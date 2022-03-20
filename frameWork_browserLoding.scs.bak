@@ -1,0 +1,161 @@
+﻿//{function GetCurrentPage()
+//{
+//  return Sys["Browser"]("*")["Page"]("*");
+//  LLPlayer["MouseMove"](10, 10, 1000);
+//}
+//
+//function Main()
+//{
+//  // Specify the file location and search pattern
+//  var path = "C:\\FrameworkFiles";
+//  var searchPattern = "*.txt";
+//
+//  var size = GetFileSize(path, searchPattern);
+//  Log["Message"](aqString["Format"]("File size: %d", size));
+//}
+//
+//function GetFileSize(Path, SearchPattern)
+//{
+//  var foundFiles, Size;
+//  
+//  foundFiles = aqFileSystem["FindFiles"](Path, SearchPattern);
+//  Size = -1;
+//  if (foundFiles!=null)
+//    Size = foundFiles["Item"](0)["Size"];
+//  return Size;
+//}
+//
+//function collapseAll(treeview)
+//{
+//  try
+//  {
+//    if(treeview ==null || !treeview.Exists)
+//    throw new Error("error")
+//    treeview.collapseAll();
+//  }
+//  catch (e)
+//  {
+//    
+//  }
+//}
+//
+//function general_findRTAApp(regProductName, regPathName)
+//    {
+//    var pathName = null;
+//    try
+//        {
+//        if(regProductName == null)
+//            throw new Error(200, "general_findRTAApp: regProductName == null!");
+//        if(regPathName == null)
+//            throw new Error(200, "general_findRTAApp: regPathName == null!");
+//
+//        pathName = general_findAppSetting(HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\" + 
+//            regProductName, regPathName);
+//
+//        if((pathName == null) || (pathName == ""))
+//            {
+//            pathName = general_findAppSetting(HKEY_CURRENT_USER, "SOFTWARE\\Classes\\" + 
+//                regProductName, regPathName);
+//            }
+//            
+//        if(pathName == null)
+//            throw new Error(200, "general_findRTAApp: Application path not found!");
+//        }
+//    catch(exception)
+//        {
+//        Log.Error("Exception in general_findRTAApp", exception.description);  
+//        }
+//    finally
+//        {
+//        return pathName;
+//        }
+//    }
+//    
+//    
+//function general_getLocalMongoDBConnections()
+//    {
+//    var DB_keys = general_getRegistryOptions(HKEY_LOCAL_MACHINE, "Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\MongoDB\\Server\\5.0");
+//    var ret = Array();
+//    for (i in DB_keys )
+//        {
+//            if (DB_keys [i].length != 0)
+//                ret.push(DB_keys [i]);
+//        }
+//    return ret;
+//    }
+//
+//function general_saveResults(fileName, filePath, logFileType)
+//    {
+//    try
+//        {
+//        var iLogFileType;
+//        var savePath = filePath + fileName;
+//        
+//        if(aqString.Compare(logFileType, "MHT", false) == 0)
+//            iLogFileType = 2;
+//        else if(aqString.Compare(logFileType, "XML", false) == 0)
+//            iLogFileType = 0;
+//        else if((aqString.Compare(logFileType, "HTML", false) == 0) || (aqString.Compare(logFileType, "HTM", false) == 0))
+//            {
+//            iLogFileType = 1;
+//            }
+//        else
+//            iLogFileType = 2;
+//               return(Log.SaveResultsAs(savePath, iLogFileType));
+//        }
+//    catch(exception)
+//        {
+//        Log.Error("Exception in general_saveResults", exception.description);
+//        }
+//    }
+//    
+//function general_setTextBoxValue(tbValue, nameMappingTb)
+//{
+//    Log.AppendFolder("into set textbox value");
+//    try
+//        {
+//        if(tbValue != null)
+//            {            
+//            if(aqObject.IsSupported(nameMappingTb, "text"))
+//                {
+//                nameMappingTb.Text = tbValue;
+//                }
+//            else
+//            if(aqObject.IsSupported(nameMappingTb, "wText"))
+//                {
+//                nameMappingTb.wText = tbValue;
+//                } 
+//            Log.Message(tbValue + " is set in the textbox.");
+//            }
+//        else
+//            Log.Message("No text to set");
+//        }
+//    catch(exception)
+//        {
+//        Log.Error("Exception in setTextBoxValue", exception.description);
+//        }
+//    finally
+//        {
+//        Log.PopLogFolder();
+//        }        
+//}
+
+function Test1()
+{
+  var scrollViewer = Aliases["RTA_Client"]["HwndSource_window"]["window"]["ScrollViewer"];
+  scrollViewer["VScroll"]["Pos"] = 92;
+  scrollViewer["HScroll"]["Pos"] = 8;
+  var dataGrid = scrollViewer["dataGrid"];
+  dataGrid["DblClick"](1062, 529);
+  dataGrid["DblClick"](1062, 529);
+  dataGrid["DblClick"](1062, 529);
+  dataGrid["DblClick"](1062, 529);
+}
+
+function Test2()
+{
+  var dataGrid = Aliases["RTA_Client"]["HwndSource_window"]["window"]["dataGrid"];
+  dataGrid["DatagridcellObjectRightclickMenu"]["MouseWheel"](-1);
+  dataGrid["DatagridcellResetPassword"]["MouseWheel"](-1);
+  dataGrid["DatagridcellCreateTestSuitePopup"]["MouseWheel"](-1);
+}
